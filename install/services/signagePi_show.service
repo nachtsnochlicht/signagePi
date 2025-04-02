@@ -1,0 +1,12 @@
+# signagePi_show.service
+[Unit]
+Description=Signage Pi Show Service
+
+[Service]
+EnvironmentFile=/etc/signagePi.conf
+Environment="Player='mpv --shuffle --loop-playlist=inf --image-display-duration=$SlideTime $MediaPufferPath/*'"
+ExecStart=/bin/bash -c $Player
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

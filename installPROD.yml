@@ -1,0 +1,43 @@
+- hosts: prodPis
+  become: yes # Run commands as root
+  tasks:
+      - name: Check current user environment variable
+        shell: "echo $USER"
+        register: result
+      - name: Display result
+        debug:
+          msg: "Current user is: {{ result.stdout }}"
+
+      - name: Copy install files
+        synchronize:
+          src: ./install/
+          dest: /home/{{ ansible_user }}/signagePi/
+      - name: Run install script
+        shell: "/bin/bash /home/{{ ansible_user }}/signagePi/install.sh"
+        args:
+          chdir: "/home/{{ ansible_user}}/signagePi"
+        environment:
+          user_name: "{{ ansible_user }}"  
+          smb_share: "{{ smb_share }}"
+          smb_user: "{{ smb_user }}"
+          smb_password: "{{ smb_password }}"
+        register: install_output
+        ignore_errors: yes
+
+      - name: Show the Install script output
+        debug:
+            msg: "{{ install_output.stdout }}"
+
+      - name: Show script exit status
+        debug:
+            msg: "Script exit conde: {{ install_output.rc }}"
+
+      - name: Restart service after install / update
+        block:
+          - service:
+              name: signagePi_show.service
+              state: restarted
+          - service:
+              name: signagePi_sync.timer
+              state: restarted
+        when: install_output.changed

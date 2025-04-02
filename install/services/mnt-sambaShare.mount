@@ -1,0 +1,12 @@
+# signagePi_samba.mount
+[Unit]
+Description=Mount Samba Share for SignagePi
+After=network-online.target
+Wants=network-online.target
+
+[Mount]
+EnvironmentFile=/etc/signagePi.conf
+What=${SambaShare}
+Where=/mnt/sambaShare
+Options=username=${SambaUser},password=${SambaPassword}
+Type=cifs

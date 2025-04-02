@@ -1,0 +1,13 @@
+# signagePi_sync.service
+[Unit]
+Description=Signage Pi Sync Service
+After=mnt-sambaShare.mount
+BindsTo=mnt-sambaShare.mount
+
+[Service]
+EnvironmentFile=/etc/signagePi.conf
+ExecStart=/bin/bash -c "[ -n \"$(rsync -aEim --delete /mnt/sambaShare/ $MediaPufferPath/)\" ] && systemctl restart signagePi_show.service"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

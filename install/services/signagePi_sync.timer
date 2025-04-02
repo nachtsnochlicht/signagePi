@@ -1,0 +1,9 @@
+[Unit]
+Description=Run Signage Pi Sync Service every 1 minutes
+
+[Timer]
+OnBootSec=0min
+OnCalendar=minutely
+
+[Install]
+WantedBy=timers.target
